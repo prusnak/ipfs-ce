@@ -1,0 +1,13 @@
+#!/bin/bash
+
+hash_c="$1"
+hash_p="$2"
+filename="$3"
+if [ -z "$hash_c" -o -z "$hash_p" -o -z "$filename" ]; then
+	echo "Usage: ipfs-ce-get hash_c hash_p filename"
+	exit 1
+fi
+
+plaintexthash=$( echo $hash_p | base58 -d | xxd -p -c 256 | sed -e 's:^1220:: ')
+
+ipfs cat "$hash_c" | openssl enc -d -aes-256-cbc -K $plaintexthash -iv '' -out $filename

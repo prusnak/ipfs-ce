@@ -1,0 +1,17 @@
+#!/bin/bash
+
+plaintext="$1"
+if [ -z "$plaintext" ]; then
+	echo "Usage: ipfs-ce-add filename"
+	exit 1
+fi
+
+plaintexthash=$( sha256sum $plaintext | cut -f 1 -d ' ' )
+
+ciphertexthash=$( openssl enc -e -aes-256-cbc -K $plaintexthash -iv '' -in $plaintext | ipfs add | cut -f 2 -d ' ' )
+echo -n 'H_c: '
+echo $ciphertexthash
+
+echo -n 'H_p: '
+echo -n "1220$plaintexthash" | xxd -r -p | base58
+echo
